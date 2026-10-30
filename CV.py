@@ -35,3 +35,24 @@ gpa = st.number_input(
 )
 
 bio = st.text_area("نبذة عنك وعن مهاراتك")
+
+if st.button("عرض سيرتي الذاتية"):
+    if not name.strip():
+        st.warning("اكتب اسمك أولًا.")
+
+    elif not bio.strip():
+        st.warning("اكتب نبذة عنك أولًا.")
+
+    else:
+        st.success("تم إنشاء بطاقتك المهنية!")
+
+        st.markdown("---")
+        st.markdown("## بطاقتي المهنية")
+
+        st.markdown(f"### {name}")
+        st.markdown(f"**العمر:** {age}")
+        st.markdown(f"**التخصص:** {major}")
+        st.markdown(f"**المعدل:** {gpa:.1f} / 4.0")
+
+        st.markdown("### نبذة عني")
+        st.write(bio)
