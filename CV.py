@@ -1,30 +1,24 @@
 import streamlit as st
 
-# إعداد الصفحة — يوضع قبل عناصر الواجهة
+# إعداد الصفحة
 st.set_page_config(
     page_title="بطاقتي المهنية",
     page_icon="🪪",
     layout="centered"
 )
 
-# عنوان التطبيق وتعليماته
+# عنوان التطبيق والتعليمات
 st.title("🪪 بطاقتي المهنية")
-st.markdown(
-    "حوّل معلوماتك إلى **بطاقة تعريف مهنية** مرتّبة."
-)
+st.markdown("أنشئ **سيرة ذاتية مختصرة** تعرض دراستك ومهاراتك.")
 
-st.info(
-    "أكمل النموذج ثم اضغط «عرض سيرتي الذاتية». "
-    "لن تُعرض البطاقة قبل إرسال النموذج."
-)
+st.info("أكمل معلوماتك، ثم اضغط زر عرض السيرة الذاتية.")
 
-# حفظ البطاقة حتى تبقى ظاهرة عند إعادة تشغيل الصفحة تفاعليًا
+# حفظ آخر بطاقة صحيحة خلال الجلسة
 if "cv_data" not in st.session_state:
     st.session_state.cv_data = None
 
-# النموذج يجمع المدخلات ويرسلها عند الضغط على Submit
+# نموذج إدخال المعلومات
 with st.form("cv_form"):
-
     st.subheader("① المعلومات الشخصية")
 
     name = st.text_input(
@@ -34,8 +28,8 @@ with st.form("cv_form"):
     )
 
     headline = st.text_input(
-        "المسمّى المهني أو المجال المستهدف",
-        placeholder="مثال: مطوّر واجهات أمامية | طالب ذكاء اصطناعي",
+        "المسمّى المهني",
+        placeholder="مثال: مطوّر برمجيات",
         max_chars=120
     )
 
@@ -49,7 +43,7 @@ with st.form("cv_form"):
     st.divider()
     st.subheader("② الدراسة")
 
-    # توزيع حقول الدراسة على عمودين
+    # عرض حقول الدراسة في عمودين
     major_col, gpa_col = st.columns(2)
 
     with major_col:
@@ -78,9 +72,8 @@ with st.form("cv_form"):
     st.divider()
     st.subheader("③ المهارات والنبذة")
 
-    # عنصر إضافي يسمح باختيار عدة مهارات
     skills = st.multiselect(
-        "المهارات",
+        "مهاراتك",
         [
             "Python",
             "تحليل البيانات",
@@ -91,37 +84,29 @@ with st.form("cv_form"):
             "Git",
             "التواصل",
             "العمل الجماعي"
-        ],
-        help="اختَر المهارات التي تعبّر عن خبرتك."
+        ]
     )
 
     bio = st.text_area(
         "نبذة عنك",
-        placeholder=(
-            "اكتب جملتين أو ثلاثًا عن دراستك، "
-            "خبرتك، وما تطمح لتحقيقه."
-        ),
+        placeholder="اكتب عن دراستك وخبرتك وأهدافك المهنية.",
         height=150,
         max_chars=1000
     )
 
-    ready = st.checkbox(
-        "راجعت معلوماتي وأنا جاهز لعرض البطاقة"
-    )
+    ready = st.checkbox("راجعت معلوماتي وأنا جاهز لعرض البطاقة")
 
     st.caption("الاسم والنبذة وتأكيد المراجعة مطلوبة.")
 
-    # زر إرسال النموذج
     submitted = st.form_submit_button(
         "عرض سيرتي الذاتية ✨",
         use_container_width=True
     )
 
-# التحقق من المدخلات بعد الضغط على الزر
+# التحقق من المعلومات عند إرسال النموذج
 if submitted:
-
     if not name.strip():
-        st.error("اكتب الاسم الكامل أولًا.")
+        st.error("اكتب اسمك الكامل أولًا.")
 
     elif not bio.strip():
         st.error("اكتب نبذة قصيرة عنك.")
@@ -130,8 +115,6 @@ if submitted:
         st.warning("أكّد مراجعة المعلومات قبل عرض البطاقة.")
 
     else:
-        # حفظ نسخة من المعلومات المرسلة
-        # البطاقة تعرض آخر إرسال صحيح فقط
         st.session_state.cv_data = {
             "name": name.strip(),
             "headline": headline.strip(),
@@ -142,21 +125,44 @@ if submitted:
             "bio": bio.strip()
         }
 
-        st.success("تم إنشاء سيرتك الذاتية بنجاح!")
+        st.success("تم إنشاء بطاقتك المهنية بنجاح!")
 
-# عرض البطاقة عند وجود معلومات محفوظة
+# عرض آخر بطاقة تم إنشاؤها بنجاح
 if st.session_state.cv_data is not None:
-
     cv = st.session_state.cv_data
 
     st.divider()
     st.subheader("معاينة السيرة الذاتية")
-    st.caption(
-        "هذه آخر نسخة أرسلتها بنجاح. "
-        "لتحديثها، عدّل النموذج واضغط الزر مجددًا."
-    )
+    st.caption("لتحديث البطاقة، عدّل المعلومات وأرسل النموذج مجددًا.")
 
-    # حاوية بإطار تجمع عناصر البطاقة
     with st.container(border=True):
+        st.caption("الملف المهني")
+        st.subheader(cv["name"])
 
-        st.caption("PERSONAL PROFILE · الملف
+        if cv["headline"]:
+            st.write(cv["headline"])
+
+        st.divider()
+
+        st.markdown("#### 🎓 الدراسة")
+        st.write(cv["major"])
+
+        age_metric, gpa_metric = st.columns(2)
+
+        with age_metric:
+            st.metric("العمر", str(cv["age"]) + " سنة")
+
+        with gpa_metric:
+            st.metric("المعدل من 4", format(cv["gpa"], ".1f"))
+
+        st.divider()
+
+        st.markdown("#### 👤 نبذة عني")
+        st.write(cv["bio"])
+
+        if cv["skills"]:
+            st.divider()
+            st.markdown("#### 🛠️ المهارات")
+
+            for skill in cv["skills"]:
+                st.write("•", skill)
